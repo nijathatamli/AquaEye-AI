@@ -1,0 +1,66 @@
+import type { Metadata } from 'next'
+import { Geist, Geist_Mono } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/next'
+import { ThemeProvider } from "@/components/theme-provider"
+import { SidebarProvider } from "@/components/aqua/sidebar-context"
+import { Sidebar } from "@/components/aqua/sidebar"
+import { Topbar } from "@/components/aqua/topbar"
+import 'leaflet/dist/leaflet.css'
+import './globals.css'
+
+const _geist = Geist({ subsets: ["latin"] });
+const _geistMono = Geist_Mono({ subsets: ["latin"] });
+
+export const metadata: Metadata = {
+  title: 'AquaEye AI — Sel və Subasma Monitorinq Mərkəzi',
+  description:
+    'Süni intellekt əsaslı şəhər sel və subasma erkən xəbərdarlıq sistemi. Mövcud kameraları ağıllı sel sensorlarına çeviririk.',
+  generator: 'v0.app',
+  icons: {
+    icon: [
+      {
+        url: '/icon-light-32x32.png',
+        media: '(prefers-color-scheme: light)',
+      },
+      {
+        url: '/icon-dark-32x32.png',
+        media: '(prefers-color-scheme: dark)',
+      },
+      {
+        url: '/icon.svg',
+        type: 'image/svg+xml',
+      },
+    ],
+    apple: '/apple-icon.png',
+  },
+}
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
+  return (
+    <html lang="az" className="bg-background" suppressHydrationWarning>
+      <body className="font-sans antialiased text-foreground bg-background">
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+          <SidebarProvider>
+            <div className="flex h-screen overflow-hidden bg-background text-foreground">
+              <Sidebar />
+              <div className="flex min-w-0 flex-1 flex-col">
+                <Topbar />
+                <main className="flex-1 overflow-y-auto">
+                  {children}
+                </main>
+              </div>
+            </div>
+          </SidebarProvider>
+        </ThemeProvider>
+        {process.env.NODE_ENV === 'production' && <Analytics />}
+      </body>
+    </html>
+  )
+}
+
+
+// Early warning dashboard verification 16
