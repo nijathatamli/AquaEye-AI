@@ -1,0 +1,16 @@
+# Vercel Deployment Ignore File
+# Exclude backend services, design mockups, and analytical documentation from production web builds.
+
+backend/
+ideas/
+.git/
+.antigravitycli/
+*.zip
+*.mp4
+*.png
+*.jpg
+*.pdf
+requirements.txt
+app.py
+aquaeye_segmentation.py
+tsconfig.tsbuildinfo
