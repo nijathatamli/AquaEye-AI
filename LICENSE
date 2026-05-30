@@ -1,0 +1,20 @@
+# PROPRIETARY LICENSE & TERMS OF USE
+
+**CONFIDENTIAL & CLOSED SOURCE LICENSE**  
+**Copyright (c) 2026 AquaEye AI (Openwave Baku Deployment Unit). All rights reserved.**
+
+### 1. Proprietary Ownership
+All software, designs, algorithms (including relative occlusion calculations, specularity filter, and optical flow LSPIV matrices), databases, models, configurations, and documentation contained in this repository are the exclusive intellectual property of the AquaEye AI team.
+
+### 2. Licensing Scope
+This software is licensed solely under closed B2G agreements for deployment on secure servers owned and operated by:
+*   The Ministry of Internal Affairs of Azerbaijan (DİN)
+*   The Ministry of Emergency Situations of Azerbaijan (FHN)
+*   Baku Transport Agency (AYNA)
+
+### 3. Usage & Redistribution Restrictions
+*   **No Redistribution**: Unauthorized duplication, copying, extraction, publishing, or redistribution of any portion of this codebase via public repositories, private domains, or physically printed media is strictly prohibited.
+*   **Intranet Only**: Compilation, binary execution, and RTSP stream processing are restricted to isolated government intranet networks. No public internet routing of camera feeds is permitted.
+*   **Reverse Engineering**: Reverse engineering, decompiling, or disassembling the compiled TensorRT weights or YOLO segmentation layers is strictly forbidden.
+
+UNAUTHORIZED USE OF THIS CODEBASE VIOLATES AZE REPUBLIC DIGITAL PROPERTY PROTECTION LAWS AND IS SUBJECT TO CIVIL AND CRIMINAL PROSECUTION.
