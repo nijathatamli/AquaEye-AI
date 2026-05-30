@@ -1,0 +1,63 @@
+# ═══════════════════════════════════════════════════════════════════════
+#  AquaEye AI — Automated CI/CD Workflow Pipeline
+# ═══════════════════════════════════════════════════════════════════════
+
+name: AquaEye CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master, dev ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  # ── JOB 1: NEXT.JS FRONTEND BUILD AND LINT ───────────────────────────
+  frontend-build:
+    name: Frontend Build & Verification
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code Repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js Environment
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
+        cache: 'npm'
+
+    - name: Install NPM Dependencies
+      run: npm ci
+
+    - name: Execute Production Next.js Build
+      run: npm run build
+
+  # ── JOB 2: FASTAPI BACKEND VERIFICATION & TESTING ──────────────────
+  backend-test:
+    name: Backend Pytest Suite
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code Repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python Environment
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+        cache: 'pip'
+
+    - name: Install System Dependencies (OpenCV headles support)
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libgl1-mesa-glx libglib2.0-0
+
+    - name: Install Python Requirements
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r backend/requirements.txt
+
+    - name: Run FastAPI Integration Tests via Pytest
+      run: |
+        cd backend
+        python -m pytest
