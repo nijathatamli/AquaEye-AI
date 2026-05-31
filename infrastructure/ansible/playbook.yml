@@ -1,0 +1,84 @@
+# ═══════════════════════════════════════════════════════════════════════
+#  AquaEye AI — Ansible Node Configuration Playbook
+# ═══════════════════════════════════════════════════════════════════════
+
+- name: Configure AquaEye AI Edge Camera Processing Nodes
+  hosts: camera_nodes
+  become: yes
+  vars:
+    cuda_version: "12.1"
+    model_dir: "/opt/aquaeye/models"
+
+  tasks:
+    # ── SYSTEM PACKAGES & UTILITIES ────────────────────────────────────
+    - name: Update apt cache and install base utilities
+      apt:
+        update_cache: yes
+        name:
+          - curl
+          - git
+          - python3-pip
+          - python3-dev
+          - ffmpeg
+          - libgl1-mesa-glx
+          - libglib2.0-0
+        state: present
+
+    # ── NVIDIA CUDA TOOLKIT & CONTAINER SETUP ──────────────────────────
+    - name: Install NVIDIA Container Toolkit repository key
+      shell: |
+        curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+      args:
+        creates: /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+
+    - name: Add NVIDIA Container Toolkit repository
+      shell: |
+        curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
+        sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+        tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+      args:
+        creates: /etc/apt/sources.list.d/nvidia-container-toolkit.list
+
+    - name: Install NVIDIA Driver & Container Toolkit
+      apt:
+        update_cache: yes
+        name:
+          - nvidia-headless-535
+          - nvidia-container-toolkit
+        state: present
+
+    # ── DIRECTORY & CONFIGURATION SETUP ────────────────────────────────
+    - name: Ensure target directories exist
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+      loop:
+        - "{{ model_dir }}"
+        - "/etc/aquaeye"
+
+    - name: Copy telemetry local configuration template
+      copy:
+        content: |
+          NODE_ID={{ inventory_hostname }}
+          STABILIZATION_LOCK=TRUE
+          API_URL=https://api.aquaeye.secure.intranet.gov.az/api/v1/sensors/telemetry
+        dest: "/etc/aquaeye/node.conf"
+        owner: root
+        group: root
+        mode: '0644'
+
+    # ── DOWNLOAD MODEL WEIGHTS ─────────────────────────────────────────
+    - name: Download YOLO segmentation model weights
+      get_url:
+        url: "https://weights.secure.intranet/yolo/yolov8n-seg.pt"
+        dest: "{{ model_dir }}/yolov8n-seg.pt"
+        mode: '0644'
+      ignore_errors: yes  # Fallback to local files if server is offline
+
+    - name: Restart docker to register NVIDIA runtime
+      systemd:
+        name: docker
+        state: restarted

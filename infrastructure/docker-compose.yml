@@ -1,0 +1,96 @@
+# ═══════════════════════════════════════════════════════════════════════
+#  AquaEye AI — Multi-Container Local Deployment Stack
+# ═══════════════════════════════════════════════════════════════════════
+
+version: '3.8'
+
+services:
+  # ── NEXT.JS FRONTEND UI DASHBOARD ──────────────────────────────────
+  frontend:
+    container_name: aquaeye-frontend
+    build:
+      context: ../
+      dockerfile: Dockerfile  # Next.js custom Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+    depends_on:
+      - backend
+    restart: always
+
+  # ── FASTAPI CORE CV SERVER ─────────────────────────────────────────
+  backend:
+    container_name: aquaeye-backend
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+      - AQUAEYE_API_KEY=din_secure_intranet_access_token_2026
+      - YOLO_SEG_MODEL_PATH=models/yolov8n-seg.pt
+      - YOLO_ANONYMIZER_MODEL_PATH=models/yolov8n-anonymizer.pt
+    volumes:
+      - backend-models:/app/models
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu] # GPU sharing for YOLO inference
+    depends_on:
+      - db
+      - redis
+    restart: always
+
+  # ── POSTGRESQL STATE STORE ──────────────────────────────────────────
+  db:
+    image: postgres:15-alpine
+    container_name: aquaeye-db
+    environment:
+      - POSTGRES_DB=aquaeye_telemetry
+      - POSTGRES_USER=aquaeye_admin
+      - POSTGRES_PASSWORD=din_secure_db_password_9821
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+  # ── REDIS CACHE BUFFER ──────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: aquaeye-redis
+    ports:
+      - "6379:6379"
+    restart: always
+
+  # ── PROMETHEUS TELEMETRY EXPORTER ──────────────────────────────────
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: aquaeye-prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    restart: always
+
+  # ── GRAFANA HARDWARE METRICS MONITOR ────────────────────────────────
+  grafana:
+    image: grafana/grafana:latest
+    container_name: aquaeye-grafana
+    ports:
+      - "3001:3000"
+    depends_on:
+      - prometheus
+    restart: always
+
+volumes:
+  pgdata:
+  backend-models:
+
+# Telemetry early warning checkpoint 90
