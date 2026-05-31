@@ -20,7 +20,7 @@ const NAV = [
   { id: "overview", label: "İcmal", icon: LayoutDashboard, href: "/dashboard" },
   { id: "map", label: "Canlı xəritə", icon: Map, href: "/live-map" },
   { id: "cameras", label: "Kameralar", icon: Camera, href: "/cameras" },
-  { id: "alerts", label: "Xəbərdarlıqlar", icon: Bell, badge: 2, href: "/alerts" },
+  { id: "alerts", label: "Xəbərdarlıqlar", icon: Bell, badge: 6, href: "/alerts" },
   { id: "reports", label: "Hesabatlar", icon: FileBarChart, href: "/reports" },
 ]
 

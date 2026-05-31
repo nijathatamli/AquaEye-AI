@@ -83,7 +83,7 @@ function CameraCard({
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <p className="truncate text-sm font-medium">{camera.name}</p>
-            <p className="text-xs text-muted-foreground">{camera.district}</p>
+            <p className="text-xs text-muted-foreground">{camera.zone}</p>
           </div>
           {!offline && (
             <div className="flex shrink-0 items-center gap-1 text-sm font-semibold">

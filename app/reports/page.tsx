@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils"
 import { DashboardLayout } from "@/components/aqua/dashboard-layout"
 
 export default function ReportsPage() {
-  const [selectedPeriod, setSelectedPeriod] = useState<"daily" | "weekly" | "monthly">("daily")
 
   const reports = [
     {
@@ -99,22 +98,6 @@ export default function ReportsPage() {
           </div>
         </div>
 
-        <div className="mb-4 flex items-center gap-2">
-          {["daily", "weekly", "monthly"].map((period) => (
-            <button
-              key={period}
-              onClick={() => setSelectedPeriod(period as any)}
-              className={cn(
-                "rounded-lg border px-4 py-2 text-sm font-medium transition-colors",
-                selectedPeriod === period
-                  ? "border-primary bg-primary/15 text-primary"
-                  : "border-border text-muted-foreground hover:bg-accent hover:text-foreground",
-              )}
-            >
-              {period === "daily" ? "Günlük" : period === "weekly" ? "Həftəlik" : "Aylıq"}
-            </button>
-          ))}
-        </div>
 
         <div className="space-y-3">
           {reports.map((report) => (

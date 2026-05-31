@@ -41,7 +41,7 @@ export function Topbar() {
         <button className="relative flex size-9 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:text-foreground">
           <Bell className="size-4.5" />
           <span className="absolute -right-0.5 -top-0.5 flex size-4 items-center justify-center rounded-full bg-risk-critical text-[9px] font-semibold text-white">
-            2
+            6
           </span>
         </button>
 

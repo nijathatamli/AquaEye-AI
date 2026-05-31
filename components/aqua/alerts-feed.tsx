@@ -63,7 +63,7 @@ export function AlertsFeed({
                   </span>
                   <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
                     <MapPin className="size-3" />
-                    {a.district}
+                    {a.zone}
                   </span>
                   {a.dispatched && (
                     <span className="flex items-center gap-1 rounded-md bg-primary/12 px-1.5 py-0.5 text-[10px] font-medium text-primary">
