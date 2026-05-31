@@ -1,0 +1,83 @@
+# ═══════════════════════════════════════════════════════════════════════
+#  AquaEye AI — Kubernetes Local Cluster Deployment Specification
+# ═══════════════════════════════════════════════════════════════════════
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aquaeye-backend-deployment
+  namespace: aquaeye
+  labels:
+    app: aquaeye-backend
+    tier: api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: aquaeye-backend
+  template:
+    metadata:
+      labels:
+        app: aquaeye-backend
+    spec:
+      # GPU nodes scheduling constraint: ensure YOLO-seg runs on CUDA hardware
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: accelerator
+                operator: In
+                values:
+                - nvidia-rtx-4090
+                - nvidia-a100
+      containers:
+      - name: aquaeye-core-engine
+        image: aquaeye-registry.secure.intranet/din/aquaeye-core:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8000
+          name: http-api
+        env:
+        - name: ENVIRONMENT
+          value: "intranet-production"
+        - name: YOLO_SEG_MODEL_PATH
+          value: "/opt/models/yolov8n-seg.pt"
+        - name: YOLO_ANONYMIZER_MODEL_PATH
+          value: "/opt/models/yolov8n-anonymizer.pt"
+        - name: AQUAEYE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: aquaeye-secrets
+              key: api-key
+        resources:
+          limits:
+            cpu: "4"
+            memory: 8Gi
+            nvidia.com/gpu: 1  # Standard allocation for CUDA TensorRT acceleration
+          requests:
+            cpu: "2"
+            memory: 4Gi
+            nvidia.com/gpu: 1
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http-api
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http-api
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        volumeMounts:
+        - name: model-weights-storage
+          mountPath: /opt/models
+          readOnly: true
+      volumes:
+      - name: model-weights-storage
+        persistentVolumeClaim:
+          claimName: pvc-model-weights
+
+# Telemetry early warning checkpoint 92
