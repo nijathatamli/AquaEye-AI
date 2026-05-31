@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aquaeye-config
+  namespace: aquaeye
+data:
+  ENVIRONMENT: "intranet-production"
+  YOLO_SEG_MODEL_PATH: "/opt/models/yolov8n-seg.pt"
+  YOLO_ANONYMIZER_MODEL_PATH: "/opt/models/yolov8n-anonymizer.pt"
+  STABILIZATION_LOCK: "TRUE"
+  CALIBRATION_FACTOR: "0.05"

@@ -1,0 +1,17 @@
+apiVersion: v2
+name: aquaeye-helm-chart
+description: Helm Chart packaging specification for deploying AquaEye AI in kubernetes clusters.
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+dependencies:
+  - name: postgresql
+    version: "12.1.0"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: postgresql.enabled
+  - name: redis
+    version: "17.3.17"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: redis.enabled
+
+# Telemetry early warning checkpoint 91

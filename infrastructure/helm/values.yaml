@@ -1,0 +1,55 @@
+# ═══════════════════════════════════════════════════════════════════════
+#  AquaEye AI — Helm Chart Values Specification
+# ═══════════════════════════════════════════════════════════════════════
+
+replicaCount: 3
+
+image:
+  repository: aquaeye-registry.secure.intranet/din/aquaeye-core
+  pullPolicy: IfNotPresent
+  tag: "1.0.0"
+
+service:
+  type: LoadBalancer
+  port: 80
+  targetPort: 8000
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  hosts:
+    - host: api.aquaeye.secure.intranet.gov.az
+      paths:
+        - path: /
+          pathType: Prefix
+
+resources:
+  limits:
+    cpu: 4000m
+    memory: 8Gi
+    nvidia.com/gpu: 1  # Allocates 1 CUDA device
+  requests:
+    cpu: 2000m
+    memory: 4Gi
+    nvidia.com/gpu: 1
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 85
+
+# Dependency flags
+postgresql:
+  enabled: true
+  auth:
+    database: "aquaeye_telemetry"
+    username: "aquaeye_admin"
+    password: "din_secure_db_password_9821"
+
+redis:
+  enabled: true
+  architecture: "standalone"
