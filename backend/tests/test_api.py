@@ -27,7 +27,8 @@ def test_telemetry_unauthorized():
             "confidence_score": 0.96
         }
     }
-    response = client.post("/api/v1/sensors/telemetry", json=payload)
+    headers = {"X-AquaEye-API-Key": "invalid_key_token"}
+    response = client.post("/api/v1/sensors/telemetry", json=payload, headers=headers)
     assert response.status_code == 403  # Should fail with Forbidden
 
 def test_telemetry_authorized():
